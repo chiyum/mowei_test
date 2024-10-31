@@ -36,7 +36,16 @@ export default defineConfig(({ mode }) => {
       }),
       /** 自動導入插件 */
       AutoImport({
-        imports: ["vue", "vue-router", "pinia"],
+        imports: [
+          "vue",
+          "vue-router",
+          "pinia",
+          {
+            "@arshown/vue3-i18n": ["useI18n"]
+            // 列出自動導入的函數或方法
+            // 這裡可以加入其他常用的函數
+          }
+        ],
         include: [/\.[tj]sx?$/, /\.vue$/, /\.vue\?vue/, /\.md$/],
         dts: "src/auto-imports.d.ts", // 自動生成類型定義檔案
         // 配置 ESLint 支援自動導入，避免未使用的變數報錯
