@@ -6,9 +6,24 @@
     <meta name="description" content="<%= VITE_PROJECT_DESCRIPTION %>" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title><%= VITE_SITE_TITLE %></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <style>
+      html {
+        touch-action: manipulation;
+      }
+    </style>
   </head>
   <body>
     <div id="app"></div>
     <script type="module" src="/src/main.ts"></script>
   </body>
+  <script>
+    window.addEventListener('wheel', function(event) {
+        if (event.ctrlKey) {
+          // 如果用戶使用了 Ctrl+滾輪進行縮放，則阻止
+          event.preventDefault();
+        }
+      }, { passive: false });
+
+  </script>
 </html>

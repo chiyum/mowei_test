@@ -24,7 +24,7 @@ export default tseslint.config({
     prettierConfig // Prettier 配置，用於解決 ESLint 和 Prettier 的衝突
   ],
 
-  // 定義使用的插件
+  // 定義使用的插件Ｐ
   plugins: {
     vue: pluginVue, // Vue.js 插件
     prettier: prettierPlugin, // Prettier 插件
