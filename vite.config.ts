@@ -111,7 +111,7 @@ export default defineConfig(({ mode }) => {
     /** 打包設定 */
     build: {
       // 根據 Git 分支決定輸出目錄，如果是 "online" 分支，輸出到 `dist_online`，否則輸出到 `dist`
-      outDir: process.env.BRANCH === "online" ? "dist_online" : "dist",
+      outDir: "dist",
       rollupOptions: {
         output: {
           // 定義資源文件的輸出路徑和命名規則
@@ -123,8 +123,8 @@ export default defineConfig(({ mode }) => {
             return `assets/${extType}/[name]-[hash][extname]`; // 根據文件類型輸出到相應目錄
           },
           // 定義代碼塊的輸出路徑和命名規則
-          chunkFileNames: "admin_assets/js/[name]-[hash].js",
-          entryFileNames: "admin_assets/js/[name]-[hash].js",
+          chunkFileNames: "assets/js/[name]-[hash].js",
+          entryFileNames: "assets/js/[name]-[hash].js",
           // 自定義代碼分塊策略
           manualChunks(id) {
             if (id.includes("node_modules")) {
