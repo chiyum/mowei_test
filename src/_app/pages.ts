@@ -39,7 +39,7 @@ const processedPaths = new Set<string>();
 for (const path in files) {
   // 檢查是否為 desktop 或 mobile 文件
   const isDesktop = path.includes("/desktop.vue");
-  const isMobile = path.includes("/desktop.vue");
+  const isMobile = path.includes("/mobile.vue");
 
   // 獲取基礎路徑
   let routePath;
