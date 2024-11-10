@@ -44,6 +44,8 @@ const getComponent = (vnode: VNode) => {
   }
   return vnode;
 };
+
+console.log("testHusky");
 </script>
 
 <template>
