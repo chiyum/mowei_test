@@ -16,9 +16,15 @@ const layout = computed(() => {
     path(["meta", "layout"], route)
   );
   const useAwd = defaultTo(false)(path(["meta", "useAwd"], route));
-
+  const useSameLayout = defaultTo(false)(
+    path(["meta", "awdUseSameLayout"], route)
+  );
+  console.log(useSameLayout, "useSameLayout");
   const mobileLayout = currentLayout + "-mobile";
-  return useAwd && isMobile.value ? mobileLayout : currentLayout;
+  // 使用 AWD 且不使用相同的layout時，則使用 mobileLayout
+  return useAwd && !useSameLayout && isMobile.value
+    ? mobileLayout
+    : currentLayout;
 });
 
 // 動態選擇 AWD 組件（若組件包含 desktop 和 mobile 版本，則根據裝置選擇相應的組件版本）

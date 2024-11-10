@@ -1,17 +1,16 @@
 import { Component } from "vue";
 import { markRaw } from "vue";
 
-// 定義頁面模組的類型
 interface PageModule {
   default: {
     layout?: string;
     title?: string;
     header?: string;
     noScroll?: boolean;
+    awdUseSameLayout?: boolean;
   };
 }
 
-// 定義路由的類型
 interface Route {
   path: string;
   name: string;
@@ -19,6 +18,7 @@ interface Route {
     layout: string;
     title: string;
     useAwd?: boolean;
+    awdUseSameLayout?: boolean;
   };
   component:
     | (() => Promise<Component>)
@@ -28,59 +28,71 @@ interface Route {
       };
 }
 
-// 使用 import.meta.glob 獲取所有的 .vue 文件
 const files = import.meta.glob("../pages/**/*.vue");
 const defaults = import.meta.glob<PageModule>("../pages/**/*.vue", {
   eager: true
 });
 
 const modules: Route[] = [];
+const processedPaths = new Set<string>();
 
 for (const path in files) {
-  /* 抓取路由 */
-  const name = path.replace("../pages", "").toLowerCase().replace(".vue", "");
-  let currentPath = name;
+  // 檢查是否為 desktop 或 mobile 文件
+  const isDesktop = path.includes("/desktop.vue");
+  const isMobile = path.includes("/desktop.vue");
 
-  /* /index => / */
-  currentPath = currentPath.replace(/\/index$/, "");
+  // 獲取基礎路徑
+  let routePath;
+  if (isDesktop || isMobile) {
+    // 如果是 desktop 或 mobile 文件，去掉最後的 /desktop.vue 或 /desktop.vue
+    routePath = path
+      .replace("../pages", "")
+      .replace(/\/(desktop|mobile)\.vue$/, "")
+      .toLowerCase();
+  } else {
+    // 一般文件保持原有的處理方式
+    routePath = path.replace("../pages", "").toLowerCase().replace(".vue", "");
+  }
 
-  /* /_id => /:id  動態路由 */
-  currentPath = currentPath.replace(/\/_+/g, "/:");
+  // 處理路由路徑
+  routePath = routePath.replace(/\/index$/, "").replace(/\/_+/g, "/:");
 
-  const pageModule = defaults[path];
-
-  /* 檢查是否為移動版路徑 */
-  const isMobilePath = currentPath.endsWith("-mobile");
-
-  /* 如果是移動版路徑，我們跳過它，因為我們將在桌面版路徑中處理它 */
-  if (isMobilePath) {
+  // 如果已經處理過這個路徑，跳過
+  if (processedPaths.has(routePath)) {
     continue;
   }
 
-  /* 檢查是否存在對應的移動版文件 */
-  const mobilePath = `${path.replace(".vue", "-mobile.vue")}`;
-  const mobileComponent = files[mobilePath];
+  // 檢查是否存在對應的桌面版和移動版文件
+  const basePath = path.replace(/\/(desktop|mobile)\.vue$/, "");
+  const desktopPath = `${basePath}/desktop.vue`;
+  const mobilePath = `${basePath}/mobile.vue`;
 
-  if (mobileComponent) {
-    /* 存在移動版，使用 AWD */
+  const hasDesktop = files[desktopPath];
+  const hasMobile = files[mobilePath];
+
+  if (hasDesktop && hasMobile) {
+    // 如果同時存在桌面版和移動版
+    const pageModule = defaults[desktopPath];
     modules.push({
-      path: currentPath,
-      name: currentPath,
+      path: routePath,
+      name: routePath,
       meta: {
         layout: pageModule.default.layout || "layout-default",
         title: pageModule.default.title || "app.project.title",
-        useAwd: true
+        useAwd: true,
+        awdUseSameLayout: pageModule.default.awdUseSameLayout || false
       },
       component: markRaw({
-        desktop: files[path],
-        mobile: mobileComponent
+        desktop: files[desktopPath],
+        mobile: files[mobilePath]
       })
     });
-  } else {
-    /* 不存在移動版，使用普通路由 */
+  } else if (!isDesktop && !isMobile) {
+    // 單一版本的頁面
+    const pageModule = defaults[path];
     modules.push({
-      path: currentPath,
-      name: currentPath,
+      path: routePath,
+      name: routePath,
       meta: {
         layout: pageModule.default.layout || "layout-default",
         title: pageModule.default.title || "app.project.title"
@@ -88,6 +100,8 @@ for (const path in files) {
       component: files[path]
     });
   }
+
+  processedPaths.add(routePath);
 }
 
 export default modules;
