@@ -5,7 +5,8 @@ import { fileURLToPath, URL } from "node:url";
 import eslint from "vite-plugin-eslint";
 import { viteMockServe } from "vite-plugin-mock";
 import { quasar, transformAssetUrls } from "@quasar/vite-plugin";
-import { createHtmlPlugin } from "vite-plugin-html"; // 引入插件
+import { createHtmlPlugin } from "vite-plugin-html";
+import { imagetools } from "vite-imagetools";
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   // 載入指定模式的環境變數，並指定環境變數目錄為 "env"
@@ -24,13 +25,14 @@ export default defineConfig(({ mode }) => {
   console.log("載入的 VITE 環境變數:", viteEnv);
 
   return {
-    // base: "./",
+    base: "./",
     envDir: "./env", // 指定環境變數文件的目錄
     plugins: [
       // Vue 插件，用於支援 Vue 單文件組件
       vue({
         template: { transformAssetUrls } // 處理資源文件的 URL 路徑，讓 Vue 支援 Quasar 資源加載
       }),
+      imagetools(),
       // Quasar 插件，用於支援 Quasar UI 元件庫
       quasar({
         sassVariables: "src/quasar-variables.sass" // 自訂 Quasar Sass 變數

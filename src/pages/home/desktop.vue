@@ -22,6 +22,10 @@ test();
   <div>
     <q-card class="home-card">
       <img src="https://cdn.quasar.dev/img/mountains.jpg" />
+      <img
+        src="@/assets/images/mock-bg.png?format=webp&width=500"
+        alt="示例圖片"
+      />
 
       <q-card-section>
         <div class="text-h6">Our Changing Planet</div>
